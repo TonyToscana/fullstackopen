@@ -15,7 +15,7 @@ const Statistics = ({ good, neutral, bad }) => {
       <p>bad {bad}</p>
       <p>all {total}</p>
       <p>average {zeroIfNaN(average)}</p>
-      <p>positive {zeroIfNaN(positive)} %</p>
+      <p>positive {zeroIfNaN(positive) * 100} %</p>
     </>
   );
 };
