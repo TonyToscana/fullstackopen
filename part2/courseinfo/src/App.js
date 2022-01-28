@@ -22,23 +22,23 @@ const Content = ({ course }) => {
   );
 };
 
-/* const Total = ({ course }) => {
+const Total = ({ course }) => {
   return (
     <p>
       Number of exercises{' '}
       {course.parts
         .map((part) => part.exercises)
-        .reduce((prev, curr) => prev + curr)}
+        .reduce((total, curr) => total + curr)}
     </p>
   );
-}; */
+};
 
 const Course = ({ course }) => {
   return (
     <>
       <Header course={course} />
       <Content course={course} />
-      {/* <Total course={course} /> */}
+      <Total course={course} />
     </>
   );
 };
