@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const CountryListItem = ({ country }) => {
+  const [showDetails, setShowDetails] = useState(false);
+  return (
+    <div>
+      {country.name.common}{' '}
+      <button onClick={() => setShowDetails(!showDetails)}>show</button>
+      {showDetails ? <CountryDetails country={country} /> : ''}
+    </div>
+  );
+};
+
 const CountryList = ({ countries }) => {
   return (
     <>
       {countries.map((country) => (
-        <div>{country.name.common}</div>
+        <CountryListItem country={country} />
       ))}
     </>
   );
