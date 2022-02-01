@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Filter = ({ filter, handleFilterChange }) => {
   return (
@@ -33,15 +34,20 @@ const PersonForm = ({
 const PersonDetails = ({ person }) => {
   return (
     <div key={person.name}>
-      {person.name} {person.phone}
+      {person.name} {person.number}
     </div>
   );
 };
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', phone: '040-1234567' },
-  ]);
+  const [persons, setPersons] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/persons').then((response) => {
+      setPersons(response.data);
+    });
+  }, []);
+
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [filter, setFilter] = useState('');
@@ -55,7 +61,7 @@ const App = () => {
       return;
     }
 
-    setPersons(persons.concat({ name: newName, phone: newPhone }));
+    setPersons(persons.concat({ name: newName, number: newPhone }));
     setNewName('');
     setNewPhone('');
   };
