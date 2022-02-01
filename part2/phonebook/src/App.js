@@ -33,7 +33,7 @@ const PersonForm = ({
 
 const PersonDetails = ({ person }) => {
   return (
-    <div key={person.name}>
+    <div>
       {person.name} {person.number}
     </div>
   );
@@ -99,7 +99,7 @@ const App = () => {
       />
       <h2>Numbers</h2>
       {personsToShow.map((person) => (
-        <PersonDetails person={person} />
+        <PersonDetails key={person.name} person={person} />
       ))}
     </div>
   );
