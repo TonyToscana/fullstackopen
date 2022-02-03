@@ -11,4 +11,5 @@ const create = (person) => {
   return request.then((response) => response.data);
 };
 
-export default { getAll, create };
+const defaultExport = { getAll, create };
+export default defaultExport;
