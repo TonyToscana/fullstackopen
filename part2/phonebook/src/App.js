@@ -1,57 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import personService from './services/persons/personService';
-
-const Filter = ({ filter, handleFilterChange }) => {
-  return (
-    <div>
-      filter shown with <input value={filter} onChange={handleFilterChange} />
-    </div>
-  );
-};
-
-const PersonForm = ({
-  onSubmit,
-  newName,
-  handleNameChange,
-  newPhone,
-  handlePhoneChange,
-}) => {
-  return (
-    <form onSubmit={onSubmit}>
-      <div>
-        name: <input value={newName} onChange={handleNameChange} />
-      </div>
-      <div>
-        phone: <input value={newPhone} onChange={handlePhoneChange} />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  );
-};
-
-const PersonDetails = ({ person, onDeleteClick }) => {
-  return (
-    <div>
-      {person.name} {person.number}{' '}
-      <button onClick={onDeleteClick}>delete</button>
-    </div>
-  );
-};
+import Filter from './Filter';
+import PersonForm from './PersonForm';
+import PersonDetails from './PersonDetails';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     personService.getAll().then((retrievedPersons) => {
       setPersons(retrievedPersons);
     });
   }, []);
-
-  const [newName, setNewName] = useState('');
-  const [newPhone, setNewPhone] = useState('');
-  const [filter, setFilter] = useState('');
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -93,6 +56,17 @@ const App = () => {
     }
   };
 
+  const onDeletePerson = (person) => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService
+        .remove(person.id)
+        .then(() => {
+          setPersons(persons.filter((p) => p.id !== person.id));
+        })
+        .catch(() => alert('Could not delete person'));
+    }
+  };
+
   const handleNameChange = (event) => {
     setNewName(event.target.value);
   };
@@ -112,17 +86,6 @@ const App = () => {
           person.name.toLowerCase().includes(filter.toLowerCase())
         );
 
-  const removePerson = (person) => {
-    if (window.confirm(`Delete ${person.name}?`)) {
-      personService
-        .remove(person.id)
-        .then(() => {
-          setPersons(persons.filter((p) => p.id !== person.id));
-        })
-        .catch(() => alert('Could not delete person'));
-    }
-  };
-
   return (
     <div>
       <h2>Phonebook</h2>
@@ -140,7 +103,7 @@ const App = () => {
         <PersonDetails
           key={person.name}
           person={person}
-          onDeleteClick={() => removePerson(person)}
+          onDeleteClick={() => onDeletePerson(person)}
         />
       ))}
     </div>
