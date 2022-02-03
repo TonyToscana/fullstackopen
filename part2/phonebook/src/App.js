@@ -44,8 +44,8 @@ const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    personService.getAll().then((response) => {
-      setPersons(response);
+    personService.getAll().then((retrievedPersons) => {
+      setPersons(retrievedPersons);
     });
   }, []);
 
@@ -56,20 +56,41 @@ const App = () => {
   const onSubmit = (event) => {
     event.preventDefault();
 
-    // We keep the same because the exercise said 'no duplicate names'
-    if (persons.map((p) => p.name).includes(newName)) {
-      alert(`${newName} is already added to the phonebook`);
-      return;
-    }
+    const foundPerson = persons.find((person) => person.name === newName);
 
-    personService
-      .create({ name: newName, number: newPhone })
-      .then((response) => {
-        setPersons(persons.concat(response));
-        setNewName('');
-        setNewPhone('');
-      })
-      .catch(() => alert('Error adding person'));
+    if (foundPerson === undefined) {
+      personService
+        .create({ name: newName, number: newPhone })
+        .then((createdPerson) => {
+          setPersons(persons.concat(createdPerson));
+          setNewName('');
+          setNewPhone('');
+        })
+        .catch(() => alert('Error adding person'));
+    } else {
+      if (
+        window.confirm(
+          `${foundPerson.name} is already added to the phonebook, replace old number with a new one?`
+        )
+      ) {
+        personService
+          .update(foundPerson.id, {
+            ...foundPerson,
+            number: newPhone,
+          })
+          .then((updatedPerson) => {
+            console.log(updatedPerson);
+            setPersons(
+              persons.map((person) =>
+                person.id !== updatedPerson.id ? person : updatedPerson
+              )
+            );
+            setNewName('');
+            setNewPhone('');
+          })
+          .catch(() => alert('Could not update person'));
+      }
+    }
   };
 
   const handleNameChange = (event) => {
@@ -95,7 +116,7 @@ const App = () => {
     if (window.confirm(`Delete ${person.name}?`)) {
       personService
         .remove(person.id)
-        .then((response) => {
+        .then(() => {
           setPersons(persons.filter((p) => p.id !== person.id));
         })
         .catch(() => alert('Could not delete person'));
