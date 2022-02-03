@@ -31,10 +31,11 @@ const PersonForm = ({
   );
 };
 
-const PersonDetails = ({ person }) => {
+const PersonDetails = ({ person, onDeleteClick }) => {
   return (
     <div>
-      {person.name} {person.number}
+      {person.name} {person.number}{' '}
+      <button onClick={onDeleteClick}>delete</button>
     </div>
   );
 };
@@ -67,7 +68,8 @@ const App = () => {
         setPersons(persons.concat(response));
         setNewName('');
         setNewPhone('');
-      });
+      })
+      .catch(() => alert('Error adding person'));
   };
 
   const handleNameChange = (event) => {
@@ -89,6 +91,17 @@ const App = () => {
           person.name.toLowerCase().includes(filter.toLowerCase())
         );
 
+  const removePerson = (person) => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService
+        .remove(person.id)
+        .then((response) => {
+          setPersons(persons.filter((p) => p.id !== person.id));
+        })
+        .catch(() => alert('Could not delete person'));
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -103,7 +116,11 @@ const App = () => {
       />
       <h2>Numbers</h2>
       {personsToShow.map((person) => (
-        <PersonDetails key={person.name} person={person} />
+        <PersonDetails
+          key={person.name}
+          person={person}
+          onDeleteClick={() => removePerson(person)}
+        />
       ))}
     </div>
   );
