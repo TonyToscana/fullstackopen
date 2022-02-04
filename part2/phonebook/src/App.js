@@ -10,7 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [filter, setFilter] = useState('');
-  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((retrievedPersons) => {
@@ -18,9 +18,9 @@ const App = () => {
     });
   }, []);
 
-  const showNotification = (message) => {
-    setNotificationMessage(message);
-    setTimeout(() => setNotificationMessage(null), 2000);
+  const showNotification = (message, type) => {
+    setNotification({ message, type: type ? type : 'notification' });
+    setTimeout(() => setNotification(null), 3000);
   };
 
   const onSubmit = (event) => {
@@ -73,7 +73,12 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter((p) => p.id !== person.id));
         })
-        .catch(() => alert('Could not delete person'));
+        .catch(() =>
+          showNotification(
+            `Information of ${person.name} has already been removed from the server`,
+            'error'
+          )
+        );
     }
   };
 
@@ -99,7 +104,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notificationMessage} />
+      <Notification notification={notification} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>add a new</h2>
       <PersonForm
