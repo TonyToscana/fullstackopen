@@ -1,7 +1,7 @@
 const app = require('express')();
 
 const PORT = 3002;
-const data = [
+let data = [
   {
     id: 1,
     name: 'Arto Hellas',
@@ -44,6 +44,13 @@ app.get('/api/persons/:id', (req, res) => {
     res.statusMessage = `Person not found with id ${id}`;
     res.status(404).end();
   }
+});
+
+app.delete('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id);
+  data = data.filter((per) => per.id !== id);
+
+  res.status(204).end();
 });
 
 app.listen(PORT, () => {
